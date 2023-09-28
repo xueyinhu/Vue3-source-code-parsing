@@ -1,2 +1,6 @@
-let a = 1
-export default a
+export {
+    reactive,
+    shallowReactive,
+    readonly,
+    shallowReadonly
+} from './reactive'
