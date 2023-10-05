@@ -1,3 +1,6 @@
 export const enum TrackOpType {
-    'GET'= 1
+    GET = 'get',
+    HAS = 'has',
+    ITERATE = 'iterate'
 }
+
