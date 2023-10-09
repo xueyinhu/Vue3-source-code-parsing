@@ -1,6 +1,6 @@
-import { isObject } from '@vue/shared';
+import { hasOwn, isArray, isIntegerKey, isObject, hasChange } from '@vue/shared';
 import { reactive, readonly } from "./reactive"
-import { TrackOpType } from './operations';
+import { TrackOpType, TriggerOpTypes } from './operations';
 import { Track } from './effect';
 
 function createGetter(isReadonly=false, shallow=false) {
@@ -20,7 +20,17 @@ function createGetter(isReadonly=false, shallow=false) {
 }
 
 function createSetter(shallow=false) {
-    return function set(target, key, value) {
+    return function set(target, key, value, receiver) {
+        const result = Reflect.set(target, key, value, receiver)
+        const oldValue = target[key]
+        let hasKey = isArray(target) && isIntegerKey(key)? Number(key) < target.length : hasOwn(target, key)
+        if (!hasKey) {
+            trigger(target, TriggerOpTypes.ADD, key, value)
+        } else {
+            if (hasChange(value, oldValue)) {
+                trigger(target, TriggerOpTypes.SET, key, value, oldValue)
+            }
+        }
     }
 }
 
