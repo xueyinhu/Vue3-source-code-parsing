@@ -25,13 +25,16 @@ function createSetter(shallow=false) {
         const oldValue = target[key]
         let hasKey = isArray(target) && isIntegerKey(key)? Number(key) < target.length : hasOwn(target, key)
         if (!hasKey) {
-            trigger(target, TriggerOpTypes.ADD, key, value)
+            trigger(target, TriggerOpTypes.ADD, key, value, value)
         } else {
             if (hasChange(value, oldValue)) {
                 trigger(target, TriggerOpTypes.SET, key, value, oldValue)
             }
         }
     }
+}
+
+function trigger(target, q, key, value, oldValue) {
 }
 
 const get = createGetter()
