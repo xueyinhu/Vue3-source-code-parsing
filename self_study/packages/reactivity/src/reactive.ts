@@ -7,16 +7,16 @@ import {
 } from './baseHandlers'
 
 export function reactive(target) {
-    createReactObj(target, false, reactiveHandlers)
+    return createReactObj(target, false, reactiveHandlers)
 }
 export function shallowReactive(target) {
-    createReactObj(target, false, shallowReactiveHandlers)
+    return createReactObj(target, false, shallowReactiveHandlers)
 }
 export function readonly(target) {
-    createReactObj(target, true, readonlyHandlers)
+    return createReactObj(target, true, readonlyHandlers)
 }
 export function shallowReadonly(target) {
-    createReactObj(target, true, shallowReadonlyHandlers)
+    return createReactObj(target, true, shallowReadonlyHandlers)
 }
 const reactiveMap = new WeakMap()
 const readonlyMap = new WeakMap()

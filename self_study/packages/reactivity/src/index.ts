@@ -8,3 +8,8 @@ export {
 export {
     effect
 } from './effect'
+
+export {
+    ref,
+    shallowRef
+} from './ref'

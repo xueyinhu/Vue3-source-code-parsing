@@ -48,4 +48,7 @@ export function Track(target, type, key) {
         dep.add(activeEffect)
     }
 }
+
+export function trigger(target, q, key?, value?, oldValue?) {
+}
  

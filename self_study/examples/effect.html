@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+
+    <script src="../node_modules/@vue/reactivity/dist/reactivity.global.js"></script>
+    <script>
+        const { reactive, effect } = VueReactivity
+        let obj = {name: 'ZSan', age: {n: 12}, a: 43543, y_list: [2, 4, 5, 8, -1]}
+        const state = reactive(obj)
+        console.log(state);
+        effect(()=>{
+            state.name
+        })
+        setTimeout(()=>{
+            state.name = 'SDci'
+        }, 1000)
+        console.log(state);
+    </script>
+    
+</body>
+</html>

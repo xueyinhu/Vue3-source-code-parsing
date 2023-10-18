@@ -6,10 +6,24 @@
     <title>Document</title>
 </head>
 <body>
-    <script src="@vue/reactive/dist/reactive.global.js"></script>
+    <script src="../node_modules/@vue/reactivity/dist/reactivity.global.js"></script>
     <script>
-        import {reactive} from '@vue/reactive/dist/reactive.global.js'
-        console.log(reactive);
+        const {reactive} = VueReactivity
+        const state = reactive({
+            name: 'zXsD', 
+            age: 98,
+            friend: [
+                'a',
+                'b',
+                'c'
+            ],
+            fav: {
+                "1": "running",
+                "2": "swimming",
+                "t": "sleeping"
+            }
+        })
+        console.log(state);
     </script>
 </body>
 </html>
