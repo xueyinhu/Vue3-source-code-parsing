@@ -1,3 +1,5 @@
+import { isArray } from "@vue/shared"
+
 export function effect(fn, options: any = {}) {
     const effect = createReactEffect(fn, options)
     if (!options.lazy) {
@@ -50,5 +52,24 @@ export function Track(target, type, key) {
 }
 
 export function trigger(target, q, key?, value?, oldValue?) {
+    const depsMap = targetMap.get(target)
+    if (!depsMap) return
+    let effectSet = new Set()
+    const add = (effectAdd) => {
+        if (effectAdd) {
+            effectAdd.forEach(effect => {
+                effectSet.add(effect)
+            });
+        }
+    }
+    add(depsMap.get(key))
+    effectSet.forEach((effect: any) => effect());
+    if (key === 'length' && isArray(target)) {
+        depsMap.forEach((dep, key) => {
+            // if (key === 'length' || key > newValue) {
+            //     add(dep)
+            // }
+        });
+    }
 }
  

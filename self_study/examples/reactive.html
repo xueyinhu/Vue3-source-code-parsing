@@ -6,13 +6,14 @@
     <title>Document</title>
 </head>
 <body>
+    <div id="app">name</div>
     <script src="../node_modules/@vue/reactivity/dist/reactivity.global.js"></script>
     <script>
         const {reactive} = VueReactivity
         const state = reactive({
             name: 'zXsD', 
             age: 98,
-            friend: [
+            friends: [
                 'a',
                 'b',
                 'c'
@@ -23,7 +24,7 @@
                 "t": "sleeping"
             }
         })
-        console.log(state);
+        document.getElementById('app').innerHTML = state.name
     </script>
 </body>
 </html>
