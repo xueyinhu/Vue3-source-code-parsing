@@ -9,15 +9,14 @@
     <div id="app"></div>
     <script src="../node_modules/@vue/reactivity/dist/reactivity.global.js"></script>
     <script>
-        const { reactive, effect } = VueReactivity
-        let obj = {name: 'ZSan', age: {n: 12}, a: 43543, y_list: [2, 4, 5, 8, -1]}
-        const state = reactive(obj)
+        const {effect, toRef} = VueReactivity
+        let state = {age: 11}
+        let state_age = toRef(state, 'age')
         effect(()=>{
-            app.innerHTML = state.name + " ---- " + state.y_list[2]
+            app.innerHTML = state_age.value
         })
         setTimeout(()=>{
-            state.name = 'SDci'
-            state.y_list.length = 1
+            state_age.value = 13
         }, 1000)
     </script>
     

@@ -1,4 +1,5 @@
-import { isArray } from "@vue/shared"
+import { isArray, isIntegerKey } from "@vue/shared"
+import { TriggerOpTypes } from "./operations"
 
 export function effect(fn, options: any = {}) {
     const effect = createReactEffect(fn, options)
@@ -51,7 +52,7 @@ export function Track(target, type, key) {
     }
 }
 
-export function trigger(target, q, key?, value?, oldValue?) {
+export function trigger(target, type, key?, newValue?, oldValue?) {
     const depsMap = targetMap.get(target)
     if (!depsMap) return
     let effectSet = new Set()
@@ -62,14 +63,23 @@ export function trigger(target, q, key?, value?, oldValue?) {
             });
         }
     }
-    add(depsMap.get(key))
-    effectSet.forEach((effect: any) => effect());
     if (key === 'length' && isArray(target)) {
         depsMap.forEach((dep, key) => {
-            // if (key === 'length' || key > newValue) {
-            //     add(dep)
-            // }
+            if (key === 'length' || key > newValue) {
+                add(dep)
+            }
         });
+    } else {
+        if (key != undefined) {
+            add(depsMap.get(key))
+        }
+        switch(type) {
+            case TriggerOpTypes.ADD:
+                if (isArray(target) && isIntegerKey(key)) {
+                    add(depsMap.get('length'))
+                }
+        }
     }
+    effectSet.forEach((effect: any) => effect());
 }
  

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+
+    <div id="app"></div>
+    <script src="../node_modules/@vue/reactivity/dist/reactivity.global.js"></script>
+    <script>
+        const {ref, effect} = VueReactivity
+        const t = ref('ZhGH')
+        effect(()=>{
+            app.innerHTML = t.value
+        })
+        setTimeout(()=>{
+            t.value = 'YJH'
+        }, 2000)
+    </script>
+
+</body>
+</html>
