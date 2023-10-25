@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <script src="./vue.js"></script>
+    <script>
+        const {
+            ref, 
+            computed,
+            reactive,
+            readonly,
+            watchEffect,
+            watchPostEffect,
+            watchSyncEffect,
+            watch
+        } = Vue
+
+        /** ref()
+         * 接受一个内部值
+         * 返回一个响应式、可更改的 ref 对象，此对象只有一个指向其内部值的属性 value
+         */
+        const ref_c = ref(3.1415)
+        console.log(ref_c.value);
+
+        /** computed()
+         * 接受一个 getter 函数，返回一个只读的 ref 对象
+         * 也可以接受带有 get 和 set 函数的对象来创建一个可写的 ref 对象
+         */
+        const computed_ref_c = ref(3.1415)
+        const computed_c_1 = computed(() => 0 - computed_ref_c.value)
+        console.log(computed_c_1.value);
+        const computed_c_2 = computed({
+            get: () => 0 - computed_ref_c.value,
+            set: (newValue) => computed_ref_c.value = newValue
+        })
+        console.log(computed_c_2.value);
+        computed_c_2.value = 1
+        console.log(computed_c_1.value);
+
+        /** reactive()
+         * 返回一个对象的响应式代理
+         * 返回的对象以及其中嵌套的对象都会通过 ES Proxy 包裹，因此不等于源对象
+         * 当访问到某个响应式数组或 Map 这样的原生集合类型中的 ref 元素时，不会执行 ref 的解包
+         */
+        const reactive_ref_c = ref('张三')
+        const reactive_c = reactive({count: 0})
+        reactive_c.name = reactive_ref_c
+        console.log(reactive_c.count);
+        console.log(reactive_c.name);
+
+        /** readonly()
+         * 接受一个对象 (不论是响应式还是普通的) 或是一个 ref，返回一个原值的只读代理。
+         */
+        const readonly_c = readonly(reactive({count: 0}))
+
+        /** watchEffect()
+         * 立即运行一个函数，同时响应式地追踪其依赖，并在依赖更改时重新执行
+         * 第一个参数就是要运行的副作用函数。第二个参数是一个可选的选项，可以用来调整副作用的刷新时机或调试副作用的依赖。
+         * 返回值是一个用来停止该副作用的函数。
+         */
+
+    </script>
+
+</body>
+</html>
