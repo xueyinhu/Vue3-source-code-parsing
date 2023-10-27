@@ -1,31 +1,45 @@
 import { isArray, isIntegerKey } from "@vue/shared"
 import { TriggerOpTypes } from "./operations"
 
+// 输入一个函数与相应选项，返回对应的 effect
 export function effect(fn, options: any = {}) {
     const effect = createReactEffect(fn, options)
+    // 是否为懒加载
     if (!options.lazy) {
+        // 若不是懒加载，则直接执行
         effect()
     }
     return effect
 }
 
+// 每个 effect 的唯一标识
 let uid = 0
+// effect 指针
 let activeEffect
+// 用于 effect 函数嵌套时，effect 运行时机正确
 const effectStack = []
 
+// 创建 effect
 function createReactEffect(fn, options) {
     const effect = function reactiveEffect() {
+        // 查找是否存在现有的 effect 在 effectStack 中
         if (!effectStack.includes(effect)) {
             try {
+                // 指向当前 effect
                 activeEffect = effect
+                // 入栈
                 effectStack.push(effect)
+                // 执行在 effect 函数中输入的函数
                 fn()
             } finally {
+                // 出栈
                 effectStack.pop()
+                // 指向 effectStack 中最后一个 effect
                 activeEffect = effectStack[effectStack.length - 1]
             }
         }
     }
+    // 挂载属性到自身
     effect.uid = uid++
     effect._isEffect = true
     effect.raw = fn
@@ -36,9 +50,11 @@ function createReactEffect(fn, options) {
 let targetMap = new WeakMap()
 
 export function Track(target, type, key) {
+    // 不使用 effect 触发则不执行
     if (activeEffect == undefined) {
         return
     }
+    // 将 target 与 对应的 activeEffect 关系存储到 targetMap
     let depMap = targetMap.get(target)
     if (!depMap) {
         targetMap.set(target, (depMap = new Map))
@@ -50,6 +66,7 @@ export function Track(target, type, key) {
     if (!dep.has(activeEffect)) {
         dep.add(activeEffect)
     }
+    console.log(targetMap);
 }
 
 export function trigger(target, type, key?, newValue?, oldValue?) {

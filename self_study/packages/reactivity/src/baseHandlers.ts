@@ -9,10 +9,17 @@ import { Track, trigger } from './effect';
 function createGetter(isReadonly=false, shallow=false) {
     // 返回 get 函数
     return function get(target, key, receiver) {
+        /** 为什么使用 proxy 而不是 target[key]
+         * Reflect.get 能明确 this 的指向
+         */
         const res = Reflect.get(target, key, receiver)
+        console.log("res", res);
+        // 如果是响应式的
         if (!isReadonly) {
+            console.log("!isReadonly");
             Track(target, TrackOpType.GET, key)
         }
+        // 如果是浅层的
         if (shallow) {
             return res
         }
