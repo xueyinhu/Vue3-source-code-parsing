@@ -2,13 +2,14 @@ import { hasChange, isArray } from "@vue/shared"
 import { Track, trigger } from "./effect"
 import { TrackOpType, TriggerOpTypes } from "./operations"
 
+// 函数柯里化
+
 export function ref(rawValue) {
     return createRef(rawValue)
 }
 
 export function shallowRef(rawValue) {
     return createRef(rawValue, true)
-
 }
 
 class RefImpl {

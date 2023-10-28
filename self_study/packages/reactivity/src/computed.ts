@@ -21,11 +21,14 @@ class ComputedRefImpl {
     public _value
     public effect
     constructor(public getter, public setter) {
-        this.effect = effect(getter, {lazy: true})
+        this.effect = effect(getter, {
+            lazy: true
+        })
     }
     get value() {
         if (this._dirty) {
             this.effect()
+            this._dirty = false
         }
         return 1
     }

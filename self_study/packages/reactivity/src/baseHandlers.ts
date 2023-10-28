@@ -34,12 +34,15 @@ function createGetter(isReadonly=false, shallow=false) {
 function createSetter(shallow=false) {
     // 返回 set 函数
     return function set(target, key, value, receiver) {
+        // 获取旧值
         const oldValue = target[key]
+        // 判断 key 是否存在
         let hasKey = isArray(target) && isIntegerKey(key)? Number(key) < target.length : hasOwn(target, key)
         Reflect.set(target, key, value, receiver)
         if (!hasKey) {
             trigger(target, TriggerOpTypes.ADD, key, value)
         } else {
+            // 进行判断，优化
             if (hasChange(value, oldValue)) {
                 trigger(target, TriggerOpTypes.SET, key, value, oldValue)
             }
