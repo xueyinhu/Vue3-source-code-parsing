@@ -1,6 +1,3 @@
-// import fs from 'fs'
-// import {execa} from 'execa'
-
 const fs = require('fs')
 const execa = require('execa')
 

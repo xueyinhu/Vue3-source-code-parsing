@@ -1,5 +1,5 @@
-let a = 2
+import { createRender } from "./render";
 
 export {
-  a
+  createRender
 }

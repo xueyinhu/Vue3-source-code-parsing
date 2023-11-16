@@ -23,3 +23,9 @@ export const hasOwn = (
 
 // 判断两个输入值是否有差异
 export const hasChange = (value, oldValue) => value !== oldValue
+
+// 1
+export const extend = Object.assign
+
+export * from "./shapeFlags"
+
