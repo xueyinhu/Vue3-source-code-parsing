@@ -1,5 +1,1 @@
-import { createRender } from "./render";
-
-export {
-  createRender
-}
+export { createRender } from "./render";

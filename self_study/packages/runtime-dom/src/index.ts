@@ -1,6 +1,5 @@
 import { extend } from "@vue/shared";
-// import { createRender } from "@vue/runtime-core";
-import { createRender } from "../../runtime-core/src/index";
+import { createRender } from "@vue/runtime-core";
 
 import { nodeOps } from "./nodeOps";
 import { patchProps } from "./patchProps";
