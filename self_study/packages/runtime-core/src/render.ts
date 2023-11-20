@@ -1,12 +1,21 @@
 import { ShapeFlags } from '@vue/shared';
 import { ApiCreateApp } from './apiCreateApp';
-import { createComponentInstance, setupComponent, setupRenderEffect } from './component';
+import { effect } from '@vue/reactivity'
+import { createComponentInstance, setupComponent } from './component';
 
 export function createRender(renderOptionDom) {
+  const setupRenderEffect = (instance) => {
+    effect(function componentEffect() {
+      if (!instance.isMounted) {
+        let proxy = instance.proxy
+        instance.render.call(proxy, proxy)
+      }
+    })
+  }
   const mountComponent = (initialVnode, container) => {
     const instance = initialVnode.component = createComponentInstance(initialVnode)
     setupComponent(instance)
-    setupRenderEffect()
+    setupRenderEffect(instance)
   }
   const processComponent = (n1, n2, container) => {
     if (n1 == null) {

@@ -8,7 +8,6 @@ export const ApiCreateApp = (render) => {
       _container: null,
       mount(container) {
         let vnode = createVnode(rootComponent, rootProps)
-        console.log(vnode);
         render(vnode, container)
         app._container = container
       }
