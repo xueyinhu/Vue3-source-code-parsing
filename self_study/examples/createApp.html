@@ -6,26 +6,34 @@
   </head>
   <body>
     <div id="app">----</div>
-    <script src="../node_modules/@vue/reactivity/dist/reactivity.global.js"></script>
     <script src="../node_modules/@vue/runtime-dom/dist/runtime-dom.global.js"></script>
     <script>
-      let {createApp} = VueRuntimeDom
-      let {reactive} = VueReactivity
+      let {createApp, h, reactive} = VueRuntimeDom
       let App = {
         setup(props, context) {
           console.log('setup', props, context);
-          let state = reactive({address: 'BJ'})
+          let state = reactive({age: 1, flag: false})
           const fn = () => {
             state.age ++
           }
+          setTimeout(() => {
+            state.flag = true
+          }, 2000)
           // return () => {
           //   return h('div', {style: {color: 'red'}, onClick: fn}, `hello ${state.age}`)
           // }
-          return state
+          return {
+            state,
+            fn
+          }
         },
         render(proxy) {
           console.log("render", proxy);
-          return h('div', {style: {color: 'red'}}, `hello ${proxy.state.age}`)
+          if (proxy.state.flag) {
+            return h('div', {style: {color: 'red'}, onClick: proxy.fn}, `proxy.state.age = ${proxy.state.age}`)
+          } else {
+            return h('div', {style: {color: 'blue'}, onClick: proxy.fn}, `proxy.state.age + 1 = ${proxy.state.age + 1}`)
+          }
         }
       }
       createApp(App, {name: 'ZSan', age: 10}).mount('#app')

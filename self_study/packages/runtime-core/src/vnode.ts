@@ -26,3 +26,13 @@ function normalizeChildren(vnode, children) {
   vnode.shapeFlag = vnode.shapeFlag | type
 }
 
+export function isVnode(vnode) {
+  return vnode._v_isVnode
+}
+
+export const TEXT = Symbol('text')
+export function cVnode(child) {
+  if (isObject(child)) return child
+  return createVnode(TEXT, null, String(child))
+}
+

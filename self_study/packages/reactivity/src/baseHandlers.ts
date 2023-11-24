@@ -13,10 +13,8 @@ function createGetter(isReadonly=false, shallow=false) {
          * Reflect.get 能明确 this 的指向
          */
         const res = Reflect.get(target, key, receiver)
-        console.log("res", res);
         // 如果是响应式的
         if (!isReadonly) {
-            console.log("!isReadonly");
             Track(target, TrackOpType.GET, key)
         }
         // 如果是浅层的

@@ -71,7 +71,6 @@ export function Track(target, type, key) {
     if (!dep.has(activeEffect)) {
         dep.add(activeEffect)
     }
-    console.log(targetMap);
 }
 
 export function trigger(target, type, key?, newValue?, oldValue?) {
