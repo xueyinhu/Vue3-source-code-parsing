@@ -30,9 +30,21 @@
         render(proxy) {
           console.log("render", proxy);
           if (proxy.state.flag) {
-            return h('div', {style: {color: 'red'}, onClick: proxy.fn}, `proxy.state.age = ${proxy.state.age}`)
+            return h('div', {style: {color: 'red'}, onClick: proxy.fn}, [
+              h('p', {}, 'A'),
+              h('p', {}, 'B'),
+              h('p', {}, 'D'),
+              h('p', {}, 'Q'),
+              h('p', {}, 'C'),
+            ])
           } else {
-            return h('div', {style: {color: 'blue'}, onClick: proxy.fn}, `proxy.state.age + 1 = ${proxy.state.age + 1}`)
+            return h('div', {style: {color: 'blue'}, onClick: proxy.fn}, [
+              h('p', {style: {color: 'purple'}}, 'A'),
+              h('p', {}, 'B'),
+              h('p', {}, 'C'),
+              h('p', {}, 'D'),
+              h('p', {}, 'H'),
+            ])
           }
         }
       }

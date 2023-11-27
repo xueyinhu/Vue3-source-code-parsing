@@ -53,7 +53,7 @@ export function createRender(renderOptionDom) {
       patch(null, child, el)
     }
   }
-  function mountElement(vnode, container) {
+  function mountElement(vnode, container, anchor) {
     const {props, shapeFlag, type, children} = vnode
     let el = vnode.el = hostCreateElement(type)
     if (props) {
@@ -68,7 +68,7 @@ export function createRender(renderOptionDom) {
         mountChildren(el, children)
       }
     }
-    hostInsert(el, container)
+    hostInsert(el, container, anchor)
   }
   const patchProps = (el, oldProps, newProps) => {
     if (oldProps != newProps) {
@@ -117,8 +117,8 @@ export function createRender(renderOptionDom) {
       i ++
     }
     while (i <= e1 && i <= e2) {
-      const n1 = c1[i]
-      const n2 = c2[i]
+      const n1 = c1[e1]
+      const n2 = c2[e2]
       if (isSomeVnode(n1, n2)) {
         patch(n1, n2, el)
       } else {
@@ -127,19 +127,60 @@ export function createRender(renderOptionDom) {
       e1 --
       e2 --
     }
+    if (i > e1) {
+      const nextPros = e2 + 1
+      const anchor = nextPros < c2.length ? c2[nextPros].el : null
+      while (i <= e2) {
+        patch(null, c2[i++], el, anchor)
+      }
+    } else if (i > e2) {
+      while(i <= e1) {
+        unmount(c1[i++])
+      }
+    } else {
+      let s1 = i
+      let s2 = i
+      const toBePatched = e2 - s2 + 1
+      const newIndexToPatchMap = new Array(toBePatched).fill(0)
+      let keyIndexMap = new Map()
+      for (let i = s2; i <= e2; i++) {
+        const childVnode = c2[i]
+        keyIndexMap.set(childVnode.key, i)
+      }
+      for (let i = s1; i <= e1; i++) {
+        const oldChildVnode = c1[i]
+        let newIndex = keyIndexMap.get(oldChildVnode.key)
+        if (newIndex == undefined) {
+          unmount(oldChildVnode)
+        } else {
+          newIndexToPatchMap[newIndex - s2] = i + 1
+          patch(oldChildVnode, c2[newIndex], el)
+        }
+      }
+      for (let i = toBePatched - 1; i >= 0; i--) {
+        let currentIndex = i + s2
+        let child = c2[currentIndex]
+        let anchor = currentIndex + 1 < c2.length ? c2[currentIndex].el : null
+        if (newIndexToPatchMap[i] == 0) {
+          patch(null, child, el, anchor)
+        } else {
+          hostInsert(child.el, el, anchor)
+        }
+      }
+    }
   }
-  const patchElement = (n1, n2, container) => {
+  const patchElement = (n1, n2, container, anchor) => {
     let el = (n2.el = n1.el)
     const oldProps = n1.props || {}
     const newProps = n2.props || {}
     patchProps(el, oldProps, newProps)
     patchChild(n1, n2, el)
   }
-  function processElement(n1, n2, container) {
+  function processElement(n1, n2, container, anchor) {
     if (n1 == null) {
-      mountElement(n2, container)
+      mountElement(n2, container, anchor)
     } else {
-      patchElement(n1, n2, container)
+      patchElement(n1, n2, container, anchor)
     }
   }
   const isSomeVnode = (n1, n2) => {
@@ -148,7 +189,7 @@ export function createRender(renderOptionDom) {
   const unmount = (vnode) => {
     hostRemove(vnode.el)
   }
-  const patch = (n1, n2, container) => {
+  const patch = (n1, n2, container, anchor=null) => {
     if (n1 && !isSomeVnode(n1, n2)) {
       unmount(n1)
       n1 = null
@@ -160,7 +201,7 @@ export function createRender(renderOptionDom) {
         break
       default:
         if (shapeFlag & ShapeFlags.ELEMENT) {
-          processElement(n1, n2, container)
+          processElement(n1, n2, container, anchor)
         } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
           processComponent(n1, n2, container)
         }
@@ -172,4 +213,34 @@ export function createRender(renderOptionDom) {
   return {
     createApp: ApiCreateApp(render)
   }
+}
+
+function getSequence(arr) {
+  let len = arr.length
+  const result = [0]
+  let sat, end, mid
+  for (let i = 0; i < len; i++) {
+    const arrI = arr[i]
+    if (arrI != 0) {
+      let resultLastIndex = result[result.length - 1]
+      if (arr[resultLastIndex] < arrI) {
+        result.push(i)
+        continue
+      }
+      sat = 0
+      end = result.length - 1
+      while (sat < end) {
+        mid = ((sat + end) / 2) | 0
+        if (arr[result[mid]] < arrI) {
+          sat = mid + 1
+        } else {
+          end = mid
+        }
+      }
+      if (arrI < arr[result[sat]]) {
+        result[sat] = i
+      }
+    }
+  }
+  return result
 }
