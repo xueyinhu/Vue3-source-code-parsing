@@ -3,6 +3,7 @@ import { ApiCreateApp } from './apiCreateApp';
 import { effect } from '@vue/reactivity'
 import { createComponentInstance, setupComponent } from './component';
 import { TEXT, cVnode } from './vnode';
+import { invokeArrayFns } from './apiLifecycle';
 
 export function createRender(renderOptionDom) {
   const {
@@ -18,16 +19,30 @@ export function createRender(renderOptionDom) {
   const setupRenderEffect = (instance, container) => {
     effect(function componentEffect() {
       if (!instance.isMounted) {
+        let {bm, m} = instance
+        if (bm) {
+          invokeArrayFns(bm)
+        }
         let proxy = instance.proxy
         let subTree = instance.subTree = instance.render.call(proxy, proxy)
         patch(null, subTree, container)
+        if (m) {
+          invokeArrayFns(m)
+        }
         instance.isMounted = true
       } else {
+        let {bu, u} = instance
+        if (bu) {
+          invokeArrayFns(bu)
+        }
         let proxy  = instance.proxy
         const prevTree = instance.subTree
         const nextTree = instance.render.call(proxy, proxy)
         instance.subTree = nextTree
         patch(prevTree, nextTree, container)
+        if (u) {
+          invokeArrayFns(u)
+        }
       }
     })
   }
@@ -157,6 +172,8 @@ export function createRender(renderOptionDom) {
           patch(oldChildVnode, c2[newIndex], el)
         }
       }
+      let increasingNewIndexSequence = getSequence(newIndexToPatchMap)
+      let j = increasingNewIndexSequence.length - 1
       for (let i = toBePatched - 1; i >= 0; i--) {
         let currentIndex = i + s2
         let child = c2[currentIndex]
@@ -164,7 +181,11 @@ export function createRender(renderOptionDom) {
         if (newIndexToPatchMap[i] == 0) {
           patch(null, child, el, anchor)
         } else {
-          hostInsert(child.el, el, anchor)
+          if (i != increasingNewIndexSequence[j]) {
+            hostInsert(child.el, el, anchor)
+          } else {
+            j --
+          }
         }
       }
     }
@@ -219,11 +240,13 @@ function getSequence(arr) {
   let len = arr.length
   const result = [0]
   let sat, end, mid
+  let p = arr.slice(0)
   for (let i = 0; i < len; i++) {
     const arrI = arr[i]
     if (arrI != 0) {
       let resultLastIndex = result[result.length - 1]
       if (arr[resultLastIndex] < arrI) {
+        p[i] = resultLastIndex
         result.push(i)
         continue
       }
@@ -238,9 +261,18 @@ function getSequence(arr) {
         }
       }
       if (arrI < arr[result[sat]]) {
+        if (sat > 0) {
+          p[i] = result[sat - 1]
+        }
         result[sat] = i
       }
     }
+  }
+  let rlen = result.length
+  let last = result[rlen - 1]
+  while (rlen --) {
+    result[rlen] = last
+    last = p[last]
   }
   return result
 }

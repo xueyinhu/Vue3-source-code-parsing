@@ -1,6 +1,12 @@
 import { ShapeFlags, isFunction, isObject } from '@vue/shared';
 import { ComponentPublicInstance } from './componentPublicInstance';
 
+export const getCurrentInstance = () => {
+  return currentInstance
+}
+export const setCurrentInstance = (target) => {
+  currentInstance = target
+}
 export const createComponentInstance = (vnode) => {
   const instance = {
     vnode,
@@ -37,13 +43,16 @@ function finishComponentSetup(instance) {
   }
 }
 
+export let currentInstance
 function setUpStateComponent(instance) {
   instance.proxy = new Proxy(instance.ctx, ComponentPublicInstance as any)
   let Component = instance.type
   let { setup } = Component
   if (setup) {
+    currentInstance = instance
     let setupContext = createContext(instance)
     let setupResult = setup(instance.props, setupContext)
+    currentInstance = null
     handlerSetupResult(instance, setupResult)
   } else {
     finishComponentSetup(instance)
