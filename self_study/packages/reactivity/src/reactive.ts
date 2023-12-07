@@ -1,3 +1,9 @@
+/** 对 target 对象创建代理，并进行保存与返回
+ * 若 target 不是对象类型，则直接返回 target
+ * 若已在对应的 WeakMap 有对应的 proxy，则直接返回
+ * 若 target 没有对应的 proxy，则根据对应的 Handlers 创建，存储，返回 peoxy 
+ */
+
 import { isObject } from "@vue/shared"
 import {
     reactiveHandlers,

@@ -52,6 +52,7 @@ function createReactEffect(fn, options) {
     return effect
 }
 
+// 收集 target 对应的依赖
 let targetMap = new WeakMap()
 
 export function Track(target, type, key) {
@@ -65,6 +66,7 @@ export function Track(target, type, key) {
         targetMap.set(target, (depMap = new Map))
     }
     let dep = depMap.get(key)
+    // set 去除重复的依赖
     if (!dep) {
         depMap.set(key, (dep = new Set))
     }

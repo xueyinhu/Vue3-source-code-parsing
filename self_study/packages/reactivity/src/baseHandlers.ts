@@ -1,3 +1,14 @@
+/** 提供实现 reactive 功能的对应 Handlers
+ * 主要提供 getter 与 setter 函数的实现与劫持
+ * 
+ * 若为只读：
+ *  getter: 单纯返回值，若 shallow==true 以及 type(target)==Object，则递归进行 readOnly 设置
+ *  setter：不允许
+ * 若为响应：
+ *  getter: 与只读类似，但是通过 Track 函数收集依赖
+ *  setter: 通过 trigger 函数响应式更新所有依赖
+ */
+
 import { hasOwn, isArray, isIntegerKey, isObject, hasChange } from '@vue/shared';
 import { reactive, readonly } from "./reactive"
 import { TrackOpType, TriggerOpTypes } from './operations';
@@ -15,15 +26,18 @@ function createGetter(isReadonly=false, shallow=false) {
         const res = Reflect.get(target, key, receiver)
         // 如果是响应式的
         if (!isReadonly) {
+            // 对依赖进行收集
             Track(target, TrackOpType.GET, key)
         }
         // 如果是浅层的
         if (shallow) {
             return res
         }
+        // 若不是浅层的，则递归进行配置
         if (isObject(res)) {
             return isReadonly? readonly(res): reactive(res)
         }
+        // 配置完成后进行值得返回
         return res
     }
 }
